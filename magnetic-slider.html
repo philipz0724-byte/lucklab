@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0b0d10" />
+<title>Magnetic Slider Prototype</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#12161c; --text:#f5f7fa; --muted:#8c97a7;
+    --track:#1a2029; --metal1:#eef2f5; --metal2:#aab3bd; --metal3:#616a74;
+    --glow:rgba(255,255,255,.14);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  html,body{margin:0;height:100%;background:radial-gradient(circle at 50% 18%,#171d25 0,#0b0d10 45%,#060708 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+  body{touch-action:none}
+  .app{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 28px)}
+  .top{text-align:center}
+  h1{font-size:18px;letter-spacing:.18em;text-transform:uppercase;margin:0 0 8px;font-weight:750}
+  .sub{font-size:13px;color:var(--muted)}
+  .stage{width:min(92vw,520px);display:flex;flex-direction:column;gap:18px;align-items:center}
+  .device{position:relative;width:100%;height:210px;border-radius:38px;background:linear-gradient(145deg,#0d1117,#171c23);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 28px 70px rgba(0,0,0,.45);padding:28px;display:flex;align-items:center}
+  .track{position:relative;width:100%;height:96px;border-radius:32px;background:linear-gradient(180deg,#202733,#11161d);box-shadow:inset 0 12px 24px rgba(0,0,0,.36),inset 0 -1px 0 rgba(255,255,255,.06)}
+  .slots{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;pointer-events:none}
+  .slot{width:5px;height:26px;border-radius:999px;background:rgba(255,255,255,.12);box-shadow:0 0 12px rgba(255,255,255,.04)}
+  .slider{position:absolute;top:50%;left:0;width:104px;height:76px;transform:translate3d(0,-50%,0);border-radius:26px;background:linear-gradient(135deg,var(--metal1),#c7cdd3 38%,var(--metal2) 68%,var(--metal3));box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -5px 8px rgba(0,0,0,.28),0 8px 16px rgba(0,0,0,.35),0 0 24px var(--glow);will-change:transform;touch-action:none;cursor:grab}
+  .slider:active{cursor:grabbing}
+  .slider::before{content:"";position:absolute;inset:11px 14px;border-radius:18px;border:1px solid rgba(10,13,16,.32);box-shadow:inset 0 1px 2px rgba(255,255,255,.25)}
+  .slider::after{content:"";position:absolute;left:50%;top:50%;width:34px;height:6px;transform:translate(-50%,-50%);border-radius:99px;background:rgba(16,20,25,.32);box-shadow:0 10px 0 rgba(16,20,25,.2),0 -10px 0 rgba(255,255,255,.18)}
+  .readout{font-variant-numeric:tabular-nums;font-size:12px;color:#9da7b4;letter-spacing:.08em}
+  .hint{font-size:14px;color:#c7ced8;text-align:center;line-height:1.5}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  button{appearance:none;border:1px solid rgba(255,255,255,.08);background:#121821;color:#e9edf2;padding:10px 14px;border-radius:999px;font-size:13px}
+  button.active{background:#e8edf2;color:#101419}
+  .foot{font-size:11px;color:#667180;text-align:center;max-width:520px;line-height:1.45}
+  @media (max-height:680px){.device{height:180px}.app{padding-top:18px;padding-bottom:18px}.stage{gap:12px}.foot{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <h1>Magnetic Slider</h1>
+    <div class="sub">drag • flick • feel the snap</div>
+  </div>
+
+  <div class="stage">
+    <div class="device" id="device">
+      <div class="track" id="track">
+        <div class="slots" id="slots"></div>
+        <div class="slider" id="slider" aria-label="magnetic slider"></div>
+      </div>
+    </div>
+    <div class="readout" id="readout">DETENT 3 / 5</div>
+    <div class="hint">Swipe it slowly for resistance. Flick it fast for inertia.</div>
+    <div class="controls">
+      <button id="soundBtn" class="active">Sound On</button>
+      <button id="hapticBtn" class="active">Haptics On</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="foot">Best on a phone. iPhone browsers may limit vibration; sound starts after your first touch.</div>
+</div>
+<script>
+(() => {
+  const track = document.getElementById('track');
+  const slider = document.getElementById('slider');
+  const slotsEl = document.getElementById('slots');
+  const readout = document.getElementById('readout');
+  const soundBtn = document.getElementById('soundBtn');
+  const hapticBtn = document.getElementById('hapticBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const DETENTS = 5;
+  for (let i=0;i<DETENTS;i++) {
+    const s=document.createElement('div'); s.className='slot'; slotsEl.appendChild(s);
+  }
+
+  let x=0, minX=0, maxX=0, detents=[];
+  let dragging=false, startPointerX=0, startX=0;
+  let lastPointerX=0,lastTime=0,velocity=0;
+  let anim=null, lastDetent=-1;
+  let soundOn=true,hapticOn=true;
+  let audioCtx=null;
+
+  function resize(){
+    maxX = Math.max(0, track.clientWidth - slider.clientWidth);
+    minX = 0;
+    detents = Array.from({length:DETENTS},(_,i)=> minX + (maxX-minX)*(i/(DETENTS-1)));
+    if (!Number.isFinite(x) || x===0) x=detents[2]||0;
+    x=Math.max(minX,Math.min(maxX,x));
+    render();
+  }
+
+  function nearestDetentIndex(px){
+    let best=0,d=Infinity;
+    detents.forEach((v,i)=>{const nd=Math.abs(v-px);if(nd<d){d=nd;best=i}});
+    return best;
+  }
+
+  function render(){
+    slider.style.transform=`translate3d(${x}px,-50%,0)`;
+    const idx=nearestDetentIndex(x);
+    readout.textContent=`DETENT ${idx+1} / ${DETENTS}`;
+  }
+
+  function ensureAudio(){
+    if(!audioCtx){
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(AC) audioCtx=new AC();
+    }
+    if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+  }
+
+  function clickSound(intensity=1){
+    if(!soundOn) return;
+    ensureAudio(); if(!audioCtx) return;
+    const now=audioCtx.currentTime;
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type='triangle';
+    osc.frequency.setValueAtTime(620+Math.random()*80,now);
+    osc.frequency.exponentialRampToValueAtTime(180,now+0.035);
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.exponentialRampToValueAtTime(0.12*intensity,now+0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+0.045);
+    osc.connect(gain).connect(audioCtx.destination); osc.start(now); osc.stop(now+0.05);
+    const buffer=audioCtx.createBuffer(1,Math.floor(audioCtx.sampleRate*0.018),audioCtx.sampleRate);
+    const data=buffer.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
+    const src=audioCtx.createBufferSource(), g2=audioCtx.createGain(); src.buffer=buffer; g2.gain.value=0.045*intensity; src.connect(g2).connect(audioCtx.destination); src.start(now);
+  }
+
+  function haptic(strength=1){
+    if(!hapticOn || !navigator.vibrate) return;
+    navigator.vibrate(strength>0.7 ? 10 : 5);
+  }
+
+  function detentFeedback(idx, intensity=.65){
+    if(idx===lastDetent) return;
+    lastDetent=idx; clickSound(intensity); haptic(intensity);
+  }
+
+  function magneticPosition(raw){
+    const idx=nearestDetentIndex(raw), target=detents[idx];
+    const dist=target-raw;
+    const radius=Math.max(28,(maxX-minX)/(DETENTS-1)*0.45);
+    const pull=Math.max(0,1-Math.abs(dist)/radius);
+    return raw + dist * pull * pull * 0.22;
+  }
+
+  slider.addEventListener('pointerdown', e=>{
+    ensureAudio(); if(anim) cancelAnimationFrame(anim);
+    dragging=true; slider.setPointerCapture(e.pointerId);
+    startPointerX=e.clientX; startX=x; lastPointerX=e.clientX; lastTime=performance.now(); velocity=0; lastDetent=nearestDetentIndex(x);
+  });
+
+  slider.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const now=performance.now(), dt=Math.max(8,now-lastTime);
+    const dx=e.clientX-startPointerX;
+    const raw=Math.max(minX,Math.min(maxX,startX+dx));
+    x=magneticPosition(raw);
+    const instV=(e.clientX-lastPointerX)/dt;
+    velocity=velocity*0.65+instV*0.35;
+    lastPointerX=e.clientX; lastTime=now;
+    const idx=nearestDetentIndex(x), spacing=(maxX-minX)/(DETENTS-1||1);
+    if(Math.abs(x-detents[idx])<Math.max(8,spacing*0.09)) detentFeedback(idx,Math.min(1,.45+Math.abs(velocity)*.55));
+    render();
+  });
+
+  function release(){
+    if(!dragging) return; dragging=false;
+    let v=velocity*18;
+    function step(){
+      x+=v;
+      if(x<minX){x=minX;v*=-0.18}
+      if(x>maxX){x=maxX;v*=-0.18}
+      v*=0.91;
+      const idx=nearestDetentIndex(x), target=detents[idx];
+      const dist=target-x;
+      x+=dist*0.055;
+      if(Math.abs(dist)<7 && Math.abs(v)<1.6) detentFeedback(idx,.8);
+      render();
+      if(Math.abs(v)>0.18 || Math.abs(dist)>0.35) anim=requestAnimationFrame(step);
+      else {x=target;render();detentFeedback(idx,1);anim=null;}
+    }
+    anim=requestAnimationFrame(step);
+  }
+
+  slider.addEventListener('pointerup', release);
+  slider.addEventListener('pointercancel', release);
+
+  soundBtn.onclick=()=>{soundOn=!soundOn;soundBtn.textContent=`Sound ${soundOn?'On':'Off'}`;soundBtn.classList.toggle('active',soundOn);ensureAudio();};
+  hapticBtn.onclick=()=>{hapticOn=!hapticOn;hapticBtn.textContent=`Haptics ${hapticOn?'On':'Off'}`;hapticBtn.classList.toggle('active',hapticOn);};
+  resetBtn.onclick=()=>{if(anim) cancelAnimationFrame(anim);x=detents[2]||0;lastDetent=-1;render();clickSound(.7);haptic(.7);};
+
+  window.addEventListener('resize',resize);
+  requestAnimationFrame(resize);
+})();
+</script>
+</body>
+</html>
