@@ -284,7 +284,6 @@ button{font:inherit}
     </div>
   </div>
 </main>
-
 <script>
 const runner=document.getElementById('runner');
 const sheep=document.getElementById('sheep');
@@ -292,43 +291,37 @@ const countEl=document.getElementById('count');
 const slowBtn=document.getElementById('slow');
 const slowerBtn=document.getElementById('slower');
 
-let count=0;
-let baseDuration=5200;
-let currentDuration=5200;
-let sessionStart=Date.now();
+let duration=5200;
+let cycleStart=performance.now();
+let baseCount=0;
 let hideTimer=null;
-let countTimer=null;
+const CROSSING_FRACTION=0.57;
 
-function setAnimationDuration(ms){
-  currentDuration=ms;
-  runner.style.animationDuration=ms+'ms';
-  sheep.style.animationDuration=ms+'ms';
+function derivedCount(now=performance.now()){
+  const elapsed=Math.max(0, now-cycleStart);
+  const firstCross=duration*CROSSING_FRACTION;
+  if(elapsed<firstCross) return baseCount;
+  return baseCount + 1 + Math.floor((elapsed-firstCross)/duration);
 }
 
-function scheduleOneCount(){
-  clearTimeout(countTimer);
-  countTimer=setTimeout(()=>{
-    count+=1;
-  }, currentDuration*0.56);
-}
-
-runner.addEventListener('animationiteration',()=>{
-  scheduleOneCount();
-});
-
-function restartAnimations(){
-  clearTimeout(countTimer);
+function restartVisual(){
   runner.style.animation='none';
   sheep.style.animation='none';
   void runner.offsetWidth;
-  runner.style.animation=`travel ${currentDuration}ms linear infinite`;
-  sheep.style.animation=`jump ${currentDuration}ms cubic-bezier(.42,.08,.58,.96) infinite`;
-  scheduleOneCount();
+  runner.style.animation=`travel ${duration}ms linear infinite`;
+  sheep.style.animation=`jump ${duration}ms cubic-bezier(.42,.08,.58,.96) infinite`;
+}
+
+function changePace(ms){
+  baseCount=derivedCount();
+  duration=ms;
+  cycleStart=performance.now();
+  restartVisual();
 }
 
 function reveal(){
   clearTimeout(hideTimer);
-  countEl.textContent=count;
+  countEl.textContent=String(derivedCount());
   countEl.classList.add('show');
   hideTimer=setTimeout(()=>countEl.classList.remove('show'),1800);
 }
@@ -336,10 +329,9 @@ function reveal(){
 document.getElementById('showCount').addEventListener('click',reveal);
 
 document.getElementById('restart').addEventListener('click',()=>{
-  count=0;
-  sessionStart=Date.now();
-  setAnimationDuration(baseDuration);
-  restartAnimations();
+  baseCount=0;
+  cycleStart=performance.now();
+  restartVisual();
   countEl.textContent='0';
   countEl.classList.add('show');
   clearTimeout(hideTimer);
@@ -347,33 +339,18 @@ document.getElementById('restart').addEventListener('click',()=>{
 });
 
 slowBtn.addEventListener('click',()=>{
-  baseDuration=5200;
   slowBtn.classList.add('active');
   slowerBtn.classList.remove('active');
-  sessionStart=Date.now();
-  setAnimationDuration(baseDuration);
-  restartAnimations();
+  changePace(5200);
 });
 
 slowerBtn.addEventListener('click',()=>{
-  baseDuration=6800;
   slowerBtn.classList.add('active');
   slowBtn.classList.remove('active');
-  sessionStart=Date.now();
-  setAnimationDuration(baseDuration);
-  restartAnimations();
+  changePace(6800);
 });
 
-setInterval(()=>{
-  const minutes=(Date.now()-sessionStart)/60000;
-  let extra=0;
-  if(minutes>3&&minutes<=8) extra=((minutes-3)/5)*350;
-  else if(minutes>8&&minutes<=15) extra=350+((minutes-8)/7)*350;
-  else if(minutes>15) extra=700;
-  setAnimationDuration(baseDuration+extra);
-},30000);
-
-scheduleOneCount();
+cycleStart=performance.now();
 </script>
 </body>
 </html>
