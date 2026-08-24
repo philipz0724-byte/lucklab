@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://philipz0724-byte.github.io/lucklab/sitemap.xml
