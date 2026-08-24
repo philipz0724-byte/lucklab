@@ -6,20 +6,383 @@
 <meta name="theme-color" content="#08111f">
 <title>Count Sheep</title>
 <style>
-:root{--sky-top:#050b16;--sky-mid:#0a1730;--sky-low:#15233d;--ridge-far:#1b2943;--ridge-mid:#132039;--field:#0a1424;--field-hi:#101d31;--wood-hi:#786554;--wood:#5d4d41;--wood-lo:#3f352f;--wool:#ebe8df;--wool-mid:#ddd9cf;--wool-lo:#cac7bf;--face:#343744;--text:#e2e7f1}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--sky-top);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}body{min-height:100svh}button{font:inherit}.scene{position:relative;width:100vw;height:100svh;min-height:520px;overflow:hidden;background:radial-gradient(circle at 77% 14%,rgba(219,226,241,.055) 0 7%,transparent 22%),linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 54%,var(--sky-low) 100%)}.scene:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(180deg,rgba(255,255,255,.006),rgba(0,0,0,.055))}.title{position:absolute;top:max(31px,calc(env(safe-area-inset-top) + 18px));left:0;right:0;text-align:center;color:rgba(231,236,247,.76);font-size:16.5px;font-weight:500;letter-spacing:.012em;z-index:30}.subtitle{position:absolute;top:max(58px,calc(env(safe-area-inset-top) + 45px));left:0;right:0;text-align:center;color:rgba(161,172,198,.28);font-size:10.5px;z-index:30}.moon-glow{position:absolute;right:6.5vw;top:8.5vh;width:158px;height:158px;border-radius:50%;background:radial-gradient(circle,rgba(215,223,240,.085) 0%,rgba(215,223,240,.03) 35%,transparent 72%);filter:blur(3px);z-index:2}.moon{position:absolute;right:10.5vw;top:13vh;width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#dce0e8,#bfc7d4);opacity:.72;box-shadow:0 0 18px rgba(216,223,239,.055);z-index:3}.moon:after{content:"";position:absolute;width:68px;height:68px;left:22px;top:-6px;border-radius:50%;background:linear-gradient(180deg,#091326,#0d1930)}.stars{position:absolute;inset:0;z-index:2}.stars span{position:absolute;border-radius:50%;background:#e5ebf6;opacity:.29;box-shadow:0 0 5px rgba(229,235,246,.13)}.s1{width:2px;height:2px}.s2{width:1px;height:1px}.s3{width:1.5px;height:1.5px}.cloud{position:absolute;height:16px;border-radius:999px;background:rgba(189,198,218,.022);filter:blur(.4px);z-index:2}.c1{width:145px;left:8%;top:31%}.c2{width:108px;right:17%;top:36%}.hill{position:absolute;border-radius:50% 50% 0 0;z-index:3}.h1{left:-16vw;bottom:18vh;width:78vw;height:24vh;background:var(--ridge-far);opacity:.72;transform:rotate(-2deg)}.h2{right:-17vw;bottom:16.5vh;width:86vw;height:27vh;background:var(--ridge-mid);opacity:.92;transform:rotate(2deg)}.h3{left:-10vw;right:-10vw;bottom:-11vh;height:38vh;background:linear-gradient(180deg,var(--field-hi) 0%,var(--field) 72%);border-radius:50% 50% 0 0;z-index:4}.grass-blades{position:absolute;left:0;right:0;bottom:17.6vh;height:34px;z-index:5;opacity:.22;background:linear-gradient(78deg,transparent 47%,#2b3d56 48% 50%,transparent 51%) 0 0/26px 32px repeat-x,linear-gradient(102deg,transparent 47%,#26374e 48% 50%,transparent 51%) 12px 4px/30px 29px repeat-x}.fence-shadow{position:absolute;left:50%;bottom:20.8vh;width:150px;height:18px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(0,0,0,.24),transparent 72%);opacity:.5;z-index:6}.fence{position:absolute;left:50%;bottom:22.5vh;width:132px;height:98px;transform:translateX(-50%);z-index:9;filter:drop-shadow(0 8px 8px rgba(0,0,0,.13))}.post{position:absolute;bottom:0;width:16px;height:93px;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,var(--wood-lo) 0%,var(--wood) 48%,var(--wood-hi) 100%)}.post:before{content:"";position:absolute;left:0;top:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:9px solid var(--wood-hi);transform:rotate(180deg)}.post:after{content:"";position:absolute;top:9px;left:5px;width:3px;height:60px;border-radius:999px;background:rgba(255,255,255,.035)}.post.a{left:11px}.post.b{right:11px}.rail{position:absolute;left:0;width:132px;height:11px;border-radius:4px;background:linear-gradient(180deg,var(--wood-hi),var(--wood-lo));box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}.rail.a{bottom:55px;transform:rotate(-1deg)}.rail.b{bottom:28px;transform:rotate(.7deg)}.runner{position:absolute;left:0;bottom:22.15vh;width:128px;height:90px;z-index:12;animation:travel 5200ms linear infinite;will-change:transform}.sheep{position:absolute;left:0;bottom:0;width:128px;height:84px;animation:jump 5200ms cubic-bezier(.42,.08,.58,.96) infinite;will-change:transform;filter:drop-shadow(0 10px 8px rgba(0,0,0,.16))}.body{position:absolute;left:18px;top:14px;width:82px;height:51px;border-radius:50% 51% 48% 52%;background:linear-gradient(180deg,var(--wool),var(--wool-mid));box-shadow:inset -8px -8px 12px rgba(120,120,120,.025)}.puff{position:absolute;border-radius:50%;background:radial-gradient(circle at 38% 32%,#f3f0e9 0%,var(--wool) 48%,var(--wool-mid) 78%,var(--wool-lo) 100%)}.p1{width:40px;height:41px;left:9px;top:19px}.p2{width:46px;height:46px;left:34px;top:7px}.p3{width:42px;height:43px;left:63px;top:16px}.p4{width:34px;height:34px;left:24px;top:7px}.p5{width:31px;height:31px;left:50px;top:4px}.tail{position:absolute;left:6px;top:31px;width:18px;height:15px;border-radius:65% 40% 60% 45%;background:linear-gradient(180deg,#f0ece4,var(--wool-mid));transform:rotate(17deg)}.neck{position:absolute;left:89px;top:28px;width:18px;height:28px;border-radius:48%;background:var(--wool-mid)}.head{position:absolute;left:95px;top:29px;width:31px;height:34px;border-radius:52% 46% 58% 50%;background:linear-gradient(145deg,#3b3e4d,#2c2f3b);transform:rotate(-3deg)}.snout{position:absolute;right:-3px;bottom:4px;width:12px;height:8px;border-radius:60%;background:#30333f}.eye{position:absolute;right:8px;top:8px;width:3px;height:3px;border-radius:50%;background:#c8d0df;box-shadow:0 0 2px rgba(200,208,223,.22)}.ear{position:absolute;width:15px;height:7px;border-radius:65%;background:#333642}.e1{left:98px;top:25px;transform:rotate(-27deg)}.e2{left:114px;top:29px;transform:rotate(17deg)}.leg{position:absolute;top:59px;width:6px;height:20px;border-radius:3px;background:linear-gradient(#3a3d49,#2e303b);transform-origin:top center}.l1{left:38px;animation:legA .62s ease-in-out infinite alternate}.l2{left:55px;animation:legB .62s ease-in-out infinite alternate}.l3{left:73px;animation:legA .62s ease-in-out infinite alternate}.l4{left:87px;animation:legB .62s ease-in-out infinite alternate}.hoof{position:absolute;bottom:-1px;width:8px;height:4px;border-radius:4px;background:#282b35;left:-1px}@keyframes legA{from{transform:rotate(6deg)}to{transform:rotate(-7deg)}}@keyframes legB{from{transform:rotate(-6deg)}to{transform:rotate(7deg)}}@keyframes travel{0%{transform:translateX(-148px)}100%{transform:translateX(calc(100vw + 148px))}}@keyframes jump{0%,34%{transform:translateY(0) rotate(0deg)}41%{transform:translateY(-20px) rotate(-1deg)}49%{transform:translateY(-98px) rotate(-2.5deg)}57%{transform:translateY(-20px) rotate(1.3deg)}65%,100%{transform:translateY(0) rotate(0deg)}}.count{position:absolute;left:50%;top:37%;transform:translate(-50%,-50%);z-index:30;font-size:50px;font-weight:300;color:rgba(233,238,247,.74);opacity:0;transition:opacity .42s ease;pointer-events:none}.count.show{opacity:1}.controls{position:absolute;left:50%;bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px));transform:translateX(-50%);display:flex;align-items:center;gap:4px;z-index:40;padding:6px 8px;border-radius:999px;border:1px solid rgba(165,177,204,.05);background:rgba(5,10,20,.09);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:.42;transition:opacity .25s ease}.controls:focus-within,.controls:hover{opacity:.84}.btn{border:0;background:transparent;color:rgba(193,202,220,.65);padding:8px 10px;border-radius:999px;font-size:12px;cursor:pointer}.btn:active{background:rgba(190,200,220,.055)}.pill{display:flex;gap:2px;background:rgba(175,185,210,.018);padding:2px;border-radius:999px}.pill .btn{padding:6px 8px;color:rgba(155,166,192,.5)}.pill .btn.active{background:rgba(180,190,214,.055);color:rgba(211,218,233,.76)}@media(max-width:640px){.moon-glow{right:3vw;top:10.5vh;width:125px;height:125px}.moon{width:58px;height:58px;right:10vw;top:15vh}.moon:after{width:55px;height:55px;left:18px;top:-5px}.runner{bottom:23.15vh;width:119px;height:83px}.sheep{transform:scale(.93);transform-origin:left bottom}.fence{bottom:23.4vh;transform:translateX(-50%) scale(.91)}.fence-shadow{bottom:21.5vh}.subtitle{font-size:10px}.btn{font-size:11px;padding:8px 8px}}@media(prefers-reduced-motion:reduce){.l1,.l2,.l3,.l4{animation:none}}
+:root{
+  --sky-top:#050b16;
+  --sky-mid:#0a1730;
+  --sky-low:#15233d;
+  --ridge-far:#1b2943;
+  --ridge-mid:#132039;
+  --field:#0a1424;
+  --field-hi:#101d31;
+  --wood-hi:#786554;
+  --wood:#5d4d41;
+  --wood-lo:#3f352f;
+  --wool:#ebe8df;
+  --wool-mid:#ddd9cf;
+  --wool-lo:#cac7bf;
+  --face:#343744;
+  --text:#e2e7f1;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;background:var(--sky-top);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","Segoe UI",sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior:none;
+}
+body{min-height:100svh}
+button{font:inherit}
+.scene{
+  position:relative;width:100vw;height:100svh;min-height:520px;overflow:hidden;
+  background:
+    radial-gradient(circle at 77% 14%, rgba(219,226,241,.055) 0 7%, transparent 22%),
+    linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 54%,var(--sky-low) 100%);
+}
+.scene:before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,rgba(255,255,255,.006),rgba(0,0,0,.055));
+}
+.title{
+  position:absolute;top:max(31px,calc(env(safe-area-inset-top) + 18px));left:0;right:0;
+  text-align:center;color:rgba(231,236,247,.76);font-size:16.5px;font-weight:500;letter-spacing:.012em;z-index:30;
+}
+.subtitle{
+  position:absolute;top:max(58px,calc(env(safe-area-inset-top) + 45px));left:0;right:0;
+  text-align:center;color:rgba(161,172,198,.28);font-size:10.5px;z-index:30;
+}
+.moon-glow{
+  position:absolute;right:6.5vw;top:8.5vh;width:158px;height:158px;border-radius:50%;
+  background:radial-gradient(circle,rgba(215,223,240,.085) 0%,rgba(215,223,240,.03) 35%,transparent 72%);
+  filter:blur(3px);z-index:2;
+}
+.moon{
+  position:absolute;right:10.5vw;top:13vh;width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(145deg,#dce0e8,#bfc7d4);opacity:.72;
+  box-shadow:0 0 18px rgba(216,223,239,.055);z-index:3;
+}
+.moon:after{
+  content:"";position:absolute;width:68px;height:68px;left:22px;top:-6px;border-radius:50%;
+  background:linear-gradient(180deg,#091326,#0d1930);
+}
+.stars{position:absolute;inset:0;z-index:2}
+.stars span{
+  position:absolute;border-radius:50%;background:#e5ebf6;opacity:.29;
+  box-shadow:0 0 5px rgba(229,235,246,.13)
+}
+.s1{width:2px;height:2px}.s2{width:1px;height:1px}.s3{width:1.5px;height:1.5px}
+.cloud{
+  position:absolute;height:16px;border-radius:999px;background:rgba(189,198,218,.022);
+  filter:blur(.4px);z-index:2;
+}
+.c1{width:145px;left:8%;top:31%}.c2{width:108px;right:17%;top:36%}
+.hill{position:absolute;border-radius:50% 50% 0 0;z-index:3}
+.h1{left:-16vw;bottom:18vh;width:78vw;height:24vh;background:var(--ridge-far);opacity:.72;transform:rotate(-2deg)}
+.h2{right:-17vw;bottom:16.5vh;width:86vw;height:27vh;background:var(--ridge-mid);opacity:.92;transform:rotate(2deg)}
+.h3{
+  left:-10vw;right:-10vw;bottom:-11vh;height:38vh;background:
+  linear-gradient(180deg,var(--field-hi) 0%,var(--field) 72%);
+  border-radius:50% 50% 0 0;z-index:4
+}
+.grass-blades{
+  position:absolute;left:0;right:0;bottom:17.6vh;height:34px;z-index:5;opacity:.22;
+  background:
+    linear-gradient(78deg,transparent 47%,#2b3d56 48% 50%,transparent 51%) 0 0/26px 32px repeat-x,
+    linear-gradient(102deg,transparent 47%,#26374e 48% 50%,transparent 51%) 12px 4px/30px 29px repeat-x;
+}
+.fence-shadow{
+  position:absolute;left:50%;bottom:20.8vh;width:150px;height:18px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.24),transparent 72%);opacity:.5;z-index:6;
+}
+.fence{
+  position:absolute;left:50%;bottom:22.5vh;width:132px;height:98px;transform:translateX(-50%);z-index:9;
+  filter:drop-shadow(0 8px 8px rgba(0,0,0,.13));
+}
+.post{
+  position:absolute;bottom:0;width:16px;height:93px;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(90deg,var(--wood-lo) 0%,var(--wood) 48%,var(--wood-hi) 100%);
+}
+.post:before{
+  content:"";position:absolute;left:0;top:-8px;border-left:8px solid transparent;border-right:8px solid transparent;
+  border-bottom:9px solid var(--wood-hi);transform:rotate(180deg)
+}
+.post:after{
+  content:"";position:absolute;top:9px;left:5px;width:3px;height:60px;border-radius:999px;background:rgba(255,255,255,.035)
+}
+.post.a{left:11px}.post.b{right:11px}
+.rail{
+  position:absolute;left:0;width:132px;height:11px;border-radius:4px;
+  background:linear-gradient(180deg,var(--wood-hi),var(--wood-lo));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.rail.a{bottom:55px;transform:rotate(-1deg)}
+.rail.b{bottom:28px;transform:rotate(.7deg)}
+.runner{
+  position:absolute;left:0;bottom:22.15vh;width:128px;height:90px;z-index:12;
+  animation:travel 5200ms linear infinite;will-change:transform;
+}
+.sheep{
+  position:absolute;left:0;bottom:0;width:128px;height:84px;
+  animation:jump 5200ms cubic-bezier(.42,.08,.58,.96) infinite;will-change:transform;
+  filter:drop-shadow(0 10px 8px rgba(0,0,0,.16));
+}
+.body{
+  position:absolute;left:18px;top:14px;width:82px;height:51px;border-radius:50% 51% 48% 52%;
+  background:linear-gradient(180deg,var(--wool),var(--wool-mid));
+  box-shadow:inset -8px -8px 12px rgba(120,120,120,.025)
+}
+.puff{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#f3f0e9 0%,var(--wool) 48%,var(--wool-mid) 78%,var(--wool-lo) 100%);
+}
+.p1{width:40px;height:41px;left:9px;top:19px}
+.p2{width:46px;height:46px;left:34px;top:7px}
+.p3{width:42px;height:43px;left:63px;top:16px}
+.p4{width:34px;height:34px;left:24px;top:7px}
+.p5{width:31px;height:31px;left:50px;top:4px}
+.tail{
+  position:absolute;left:6px;top:31px;width:18px;height:15px;border-radius:65% 40% 60% 45%;
+  background:linear-gradient(180deg,#f0ece4,var(--wool-mid));transform:rotate(17deg)
+}
+.neck{position:absolute;left:89px;top:28px;width:18px;height:28px;border-radius:48%;background:var(--wool-mid)}
+.head{
+  position:absolute;left:95px;top:29px;width:31px;height:34px;border-radius:52% 46% 58% 50%;
+  background:linear-gradient(145deg,#3b3e4d,#2c2f3b);transform:rotate(-3deg)
+}
+.snout{position:absolute;right:-3px;bottom:4px;width:12px;height:8px;border-radius:60%;background:#30333f}
+.eye{
+  position:absolute;right:8px;top:8px;width:3px;height:3px;border-radius:50%;background:#c8d0df;
+  box-shadow:0 0 2px rgba(200,208,223,.22)
+}
+.ear{position:absolute;width:15px;height:7px;border-radius:65%;background:#333642}
+.e1{left:98px;top:25px;transform:rotate(-27deg)} .e2{left:114px;top:29px;transform:rotate(17deg)}
+.leg{
+  position:absolute;top:59px;width:6px;height:20px;border-radius:3px;background:linear-gradient(#3a3d49,#2e303b);
+  transform-origin:top center
+}
+.l1{left:38px;animation:legA .62s ease-in-out infinite alternate}
+.l2{left:55px;animation:legB .62s ease-in-out infinite alternate}
+.l3{left:73px;animation:legA .62s ease-in-out infinite alternate}
+.l4{left:87px;animation:legB .62s ease-in-out infinite alternate}
+.hoof{position:absolute;bottom:-1px;width:8px;height:4px;border-radius:4px;background:#282b35;left:-1px}
+@keyframes legA{from{transform:rotate(6deg)}to{transform:rotate(-7deg)}}
+@keyframes legB{from{transform:rotate(-6deg)}to{transform:rotate(7deg)}}
+@keyframes travel{
+  0%{transform:translateX(-148px)}
+  100%{transform:translateX(calc(100vw + 148px))}
+}
+@keyframes jump{
+  0%,34%{transform:translateY(0) rotate(0deg)}
+  41%{transform:translateY(-20px) rotate(-1deg)}
+  49%{transform:translateY(-98px) rotate(-2.5deg)}
+  57%{transform:translateY(-20px) rotate(1.3deg)}
+  65%,100%{transform:translateY(0) rotate(0deg)}
+}
+.count{
+  position:absolute;left:50%;top:37%;transform:translate(-50%,-50%);z-index:30;
+  font-size:50px;font-weight:300;color:rgba(233,238,247,.74);opacity:0;transition:opacity .42s ease;pointer-events:none
+}
+.count.show{opacity:1}
+.controls{
+  position:absolute;left:50%;bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px));transform:translateX(-50%);
+  display:flex;align-items:center;gap:4px;z-index:40;padding:6px 8px;border-radius:999px;
+  border:1px solid rgba(165,177,204,.05);background:rgba(5,10,20,.09);
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  opacity:.42;transition:opacity .25s ease
+}
+.controls:focus-within,.controls:hover{opacity:.84}
+.btn{
+  border:0;background:transparent;color:rgba(193,202,220,.65);padding:8px 10px;border-radius:999px;font-size:12px;cursor:pointer
+}
+.btn:active{background:rgba(190,200,220,.055)}
+.pill{display:flex;gap:2px;background:rgba(175,185,210,.018);padding:2px;border-radius:999px}
+.pill .btn{padding:6px 8px;color:rgba(155,166,192,.5)}
+.pill .btn.active{background:rgba(180,190,214,.055);color:rgba(211,218,233,.76)}
+@media(max-width:640px){
+  .moon-glow{right:3vw;top:10.5vh;width:125px;height:125px}
+  .moon{width:58px;height:58px;right:10vw;top:15vh}
+  .moon:after{width:55px;height:55px;left:18px;top:-5px}
+  .runner{bottom:23.15vh;width:119px;height:83px}
+  .sheep{transform:scale(.93);transform-origin:left bottom}
+  .fence{bottom:23.4vh;transform:translateX(-50%) scale(.91)}
+  .fence-shadow{bottom:21.5vh}
+  .subtitle{font-size:10px}
+  .btn{font-size:11px;padding:8px 8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .l1,.l2,.l3,.l4{animation:none}
+}
 </style>
 </head>
 <body>
 <main class="scene">
-<div class="title">Can’t sleep? Count sheep.</div><div class="subtitle">Just follow along and count quietly.</div><div class="moon-glow"></div><div class="moon"></div>
-<div class="stars"><span class="s1" style="left:8%;top:17%"></span><span class="s2" style="left:17%;top:26%"></span><span class="s3" style="left:27%;top:12%"></span><span class="s1" style="left:39%;top:23%"></span><span class="s2" style="left:51%;top:15%"></span><span class="s3" style="left:63%;top:31%"></span><span class="s2" style="left:76%;top:20%"></span><span class="s1" style="left:89%;top:10%"></span><span class="s2" style="left:13%;top:39%"></span><span class="s3" style="left:34%;top:35%"></span><span class="s2" style="left:57%;top:41%"></span><span class="s1" style="left:84%;top:34%"></span></div>
-<div class="cloud c1"></div><div class="cloud c2"></div><div class="hill h1"></div><div class="hill h2"></div><div class="hill h3"></div><div class="grass-blades"></div><div class="fence-shadow"></div>
-<div class="fence"><div class="rail a"></div><div class="rail b"></div><div class="post a"></div><div class="post b"></div></div>
-<div class="runner" id="runner"><div class="sheep" id="sheep"><div class="tail"></div><div class="body"></div><div class="puff p1"></div><div class="puff p2"></div><div class="puff p3"></div><div class="puff p4"></div><div class="puff p5"></div><div class="neck"></div><div class="leg l1"><div class="hoof"></div></div><div class="leg l2"><div class="hoof"></div></div><div class="leg l3"><div class="hoof"></div></div><div class="leg l4"><div class="hoof"></div></div><div class="head"><div class="eye"></div><div class="snout"></div></div><div class="ear e1"></div><div class="ear e2"></div></div></div>
-<div class="count" id="count">0</div><div class="controls"><button class="btn" id="showCount">Show count</button><button class="btn" id="restart">Restart</button><div class="pill"><button class="btn active" id="slow">Slow</button><button class="btn" id="slower">Slower</button></div></div>
+  <div class="title">Can’t sleep? Count sheep.</div>
+  <div class="subtitle">Just follow along and count quietly.</div>
+
+  <div class="moon-glow"></div>
+  <div class="moon"></div>
+
+  <div class="stars">
+    <span class="s1" style="left:8%;top:17%"></span>
+    <span class="s2" style="left:17%;top:26%"></span>
+    <span class="s3" style="left:27%;top:12%"></span>
+    <span class="s1" style="left:39%;top:23%"></span>
+    <span class="s2" style="left:51%;top:15%"></span>
+    <span class="s3" style="left:63%;top:31%"></span>
+    <span class="s2" style="left:76%;top:20%"></span>
+    <span class="s1" style="left:89%;top:10%"></span>
+    <span class="s2" style="left:13%;top:39%"></span>
+    <span class="s3" style="left:34%;top:35%"></span>
+    <span class="s2" style="left:57%;top:41%"></span>
+    <span class="s1" style="left:84%;top:34%"></span>
+  </div>
+
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+
+  <div class="hill h1"></div>
+  <div class="hill h2"></div>
+  <div class="hill h3"></div>
+  <div class="grass-blades"></div>
+
+  <div class="fence-shadow"></div>
+
+  <div class="fence">
+    <div class="rail a"></div>
+    <div class="rail b"></div>
+    <div class="post a"></div>
+    <div class="post b"></div>
+  </div>
+
+  <div class="runner" id="runner">
+    <div class="sheep" id="sheep">
+      <div class="tail"></div>
+      <div class="body"></div>
+      <div class="puff p1"></div>
+      <div class="puff p2"></div>
+      <div class="puff p3"></div>
+      <div class="puff p4"></div>
+      <div class="puff p5"></div>
+      <div class="neck"></div>
+      <div class="leg l1"><div class="hoof"></div></div>
+      <div class="leg l2"><div class="hoof"></div></div>
+      <div class="leg l3"><div class="hoof"></div></div>
+      <div class="leg l4"><div class="hoof"></div></div>
+      <div class="head"><div class="eye"></div><div class="snout"></div></div>
+      <div class="ear e1"></div>
+      <div class="ear e2"></div>
+    </div>
+  </div>
+
+  <div class="count" id="count">0</div>
+
+  <div class="controls">
+    <button class="btn" id="showCount">Show count</button>
+    <button class="btn" id="restart">Restart</button>
+    <div class="pill">
+      <button class="btn active" id="slow">Slow</button>
+      <button class="btn" id="slower">Slower</button>
+    </div>
+  </div>
 </main>
+
 <script>
-const runner=document.getElementById('runner'),sheep=document.getElementById('sheep'),countEl=document.getElementById('count'),slowBtn=document.getElementById('slow'),slowerBtn=document.getElementById('slower');let count=0,baseDuration=5200,currentDuration=5200,sessionStart=Date.now(),hideTimer=null;runner.addEventListener('animationiteration',()=>{count++});function setAnimationDuration(ms){currentDuration=ms;runner.style.animationDuration=ms+'ms';sheep.style.animationDuration=ms+'ms'}function restartAnimations(){runner.style.animation='none';sheep.style.animation='none';void runner.offsetWidth;runner.style.animation=`travel ${currentDuration}ms linear infinite`;sheep.style.animation=`jump ${currentDuration}ms cubic-bezier(.42,.08,.58,.96) infinite`}function reveal(){clearTimeout(hideTimer);countEl.textContent=count;countEl.classList.add('show');hideTimer=setTimeout(()=>countEl.classList.remove('show'),1800)}document.getElementById('showCount').addEventListener('click',reveal);document.getElementById('restart').addEventListener('click',()=>{count=0;sessionStart=Date.now();setAnimationDuration(baseDuration);restartAnimations();countEl.textContent='0';countEl.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(()=>countEl.classList.remove('show'),1200)});slowBtn.addEventListener('click',()=>{baseDuration=5200;slowBtn.classList.add('active');slowerBtn.classList.remove('active');sessionStart=Date.now();setAnimationDuration(baseDuration);restartAnimations()});slowerBtn.addEventListener('click',()=>{baseDuration=6800;slowerBtn.classList.add('active');slowBtn.classList.remove('active');sessionStart=Date.now();setAnimationDuration(baseDuration);restartAnimations()});setInterval(()=>{const minutes=(Date.now()-sessionStart)/60000;let extra=0;if(minutes>3&&minutes<=8)extra=((minutes-3)/5)*350;else if(minutes>8&&minutes<=15)extra=350+((minutes-8)/7)*350;else if(minutes>15)extra=700;setAnimationDuration(baseDuration+extra)},30000);
+const runner=document.getElementById('runner');
+const sheep=document.getElementById('sheep');
+const fence=document.querySelector('.fence');
+const countEl=document.getElementById('count');
+const slowBtn=document.getElementById('slow');
+const slowerBtn=document.getElementById('slower');
+
+let count=0;
+let baseDuration=5200;
+let currentDuration=5200;
+let sessionStart=Date.now();
+let hideTimer=null;
+let countedThisPass=false;
+let lastCenterX=null;
+
+function setAnimationDuration(ms){
+  currentDuration=ms;
+  runner.style.animationDuration=ms+'ms';
+  sheep.style.animationDuration=ms+'ms';
+}
+
+function restartAnimations(){
+  countedThisPass=false;
+  lastCenterX=null;
+  runner.style.animation='none';
+  sheep.style.animation='none';
+  void runner.offsetWidth;
+  runner.style.animation=`travel ${currentDuration}ms linear infinite`;
+  sheep.style.animation=`jump ${currentDuration}ms cubic-bezier(.42,.08,.58,.96) infinite`;
+}
+
+function trackFenceCrossing(){
+  const r=runner.getBoundingClientRect();
+  const f=fence.getBoundingClientRect();
+  const centerX=r.left+r.width*0.52;
+  const fenceCenter=f.left+f.width/2;
+
+  if(lastCenterX!==null && centerX < lastCenterX-100){
+    countedThisPass=false;
+  }
+
+  if(!countedThisPass && lastCenterX!==null && lastCenterX < fenceCenter && centerX >= fenceCenter){
+    count++;
+    countedThisPass=true;
+  }
+
+  lastCenterX=centerX;
+  requestAnimationFrame(trackFenceCrossing);
+}
+requestAnimationFrame(trackFenceCrossing);
+
+function reveal(){
+  clearTimeout(hideTimer);
+  countEl.textContent=count;
+  countEl.classList.add('show');
+  hideTimer=setTimeout(()=>countEl.classList.remove('show'),1800);
+}
+
+document.getElementById('showCount').addEventListener('click',reveal);
+
+document.getElementById('restart').addEventListener('click',()=>{
+  count=0;
+  sessionStart=Date.now();
+  setAnimationDuration(baseDuration);
+  restartAnimations();
+  countEl.textContent='0';
+  countEl.classList.add('show');
+  clearTimeout(hideTimer);
+  hideTimer=setTimeout(()=>countEl.classList.remove('show'),1200);
+});
+
+slowBtn.addEventListener('click',()=>{
+  baseDuration=5200;
+  slowBtn.classList.add('active');
+  slowerBtn.classList.remove('active');
+  sessionStart=Date.now();
+  setAnimationDuration(baseDuration);
+  restartAnimations();
+});
+
+slowerBtn.addEventListener('click',()=>{
+  baseDuration=6800;
+  slowerBtn.classList.add('active');
+  slowBtn.classList.remove('active');
+  sessionStart=Date.now();
+  setAnimationDuration(baseDuration);
+  restartAnimations();
+});
+
+setInterval(()=>{
+  const minutes=(Date.now()-sessionStart)/60000;
+  let extra=0;
+  if(minutes>3&&minutes<=8) extra=((minutes-3)/5)*350;
+  else if(minutes>8&&minutes<=15) extra=350+((minutes-8)/7)*350;
+  else if(minutes>15) extra=700;
+  setAnimationDuration(baseDuration+extra);
+},30000);
 </script>
-</body></html>
+</body>
+</html>
