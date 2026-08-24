@@ -288,7 +288,6 @@ button{font:inherit}
 <script>
 const runner=document.getElementById('runner');
 const sheep=document.getElementById('sheep');
-const fence=document.querySelector('.fence');
 const countEl=document.getElementById('count');
 const slowBtn=document.getElementById('slow');
 const slowerBtn=document.getElementById('slower');
@@ -298,8 +297,7 @@ let baseDuration=5200;
 let currentDuration=5200;
 let sessionStart=Date.now();
 let hideTimer=null;
-let countedThisPass=false;
-let lastCenterX=null;
+let countTimer=null;
 
 function setAnimationDuration(ms){
   currentDuration=ms;
@@ -307,35 +305,26 @@ function setAnimationDuration(ms){
   sheep.style.animationDuration=ms+'ms';
 }
 
+function scheduleOneCount(){
+  clearTimeout(countTimer);
+  countTimer=setTimeout(()=>{
+    count+=1;
+  }, currentDuration*0.56);
+}
+
+runner.addEventListener('animationiteration',()=>{
+  scheduleOneCount();
+});
+
 function restartAnimations(){
-  countedThisPass=false;
-  lastCenterX=null;
+  clearTimeout(countTimer);
   runner.style.animation='none';
   sheep.style.animation='none';
   void runner.offsetWidth;
   runner.style.animation=`travel ${currentDuration}ms linear infinite`;
   sheep.style.animation=`jump ${currentDuration}ms cubic-bezier(.42,.08,.58,.96) infinite`;
+  scheduleOneCount();
 }
-
-function trackFenceCrossing(){
-  const r=runner.getBoundingClientRect();
-  const f=fence.getBoundingClientRect();
-  const centerX=r.left+r.width*0.52;
-  const fenceCenter=f.left+f.width/2;
-
-  if(lastCenterX!==null && centerX < lastCenterX-100){
-    countedThisPass=false;
-  }
-
-  if(!countedThisPass && lastCenterX!==null && lastCenterX < fenceCenter && centerX >= fenceCenter){
-    count++;
-    countedThisPass=true;
-  }
-
-  lastCenterX=centerX;
-  requestAnimationFrame(trackFenceCrossing);
-}
-requestAnimationFrame(trackFenceCrossing);
 
 function reveal(){
   clearTimeout(hideTimer);
@@ -383,6 +372,8 @@ setInterval(()=>{
   else if(minutes>15) extra=700;
   setAnimationDuration(baseDuration+extra);
 },30000);
+
+scheduleOneCount();
 </script>
 </body>
 </html>
