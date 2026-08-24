@@ -1,0 +1,88 @@
+name: Count Sheep SEO Setup
+
+on:
+  push:
+    paths:
+      - '.github/workflows/count-sheep-seo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  setup-seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add SEO foundation
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('count-sheep.html')
+          html = p.read_text(encoding='utf-8')
+
+          old = '<meta name="theme-color" content="#08111f">\n<title>Count Sheep</title>'
+          new = '''<meta name="theme-color" content="#08111f">
+          <title>Count Sheep Online – A Calm Counting Sheep Sleep Aid</title>
+          <meta name="description" content="Count sheep online with a calm, endless sheep animation. No signup, no game, no distractions—just count quietly and relax before sleep.">
+          <meta name="robots" content="index,follow,max-image-preview:large">
+          <link rel="canonical" href="https://philipz0724-byte.github.io/lucklab/count-sheep/">
+          <meta property="og:type" content="website">
+          <meta property="og:title" content="Count Sheep Online">
+          <meta property="og:description" content="A simple, calming online sheep counter for bedtime. Watch the sheep jump the fence and count quietly.">
+          <meta property="og:url" content="https://philipz0724-byte.github.io/lucklab/count-sheep/">
+          <meta name="twitter:card" content="summary">
+          <meta name="twitter:title" content="Count Sheep Online">
+          <meta name="twitter:description" content="A simple, calming online sheep counter for bedtime.">
+          <script type="application/ld+json">
+          {"@context":"https://schema.org","@type":"WebApplication","name":"Count Sheep Online","description":"A simple online counting sheep sleep aid with an endless sheep animation.","applicationCategory":"LifestyleApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+          </script>'''
+          if old in html:
+              html = html.replace(old, new, 1)
+
+          html = html.replace('<div class="title">Can’t sleep? Count sheep.</div>', '<h1 class="title">Can’t sleep? Count sheep.</h1>')
+          html = html.replace('<div class="subtitle">Just follow along and count quietly.</div>', '<p class="subtitle">Just follow along and count quietly.</p>')
+
+          if '.seo-info{' not in html:
+              css = '''\n.seo-info{max-width:760px;margin:0 auto;padding:54px 24px 72px;color:rgba(204,213,230,.62);background:var(--sky-top);font-size:15px;line-height:1.75}.seo-info h2{margin:28px 0 10px;color:rgba(229,235,246,.82);font-size:21px;font-weight:600;line-height:1.3}.seo-info p{margin:0 0 14px}.seo-info ol{margin:8px 0 18px;padding-left:22px}.seo-info li{margin:5px 0}.seo-info strong{color:rgba(229,235,246,.78);font-weight:600}\n'''
+              html = html.replace('@media(max-width:640px){', css + '@media(max-width:640px){', 1)
+
+          # Allow the explanatory section to live below the full-screen sleep experience.
+          html = html.replace('margin:0;width:100%;height:100%;overflow:hidden;background:var(--sky-top);', 'margin:0;width:100%;min-height:100%;background:var(--sky-top);')
+          html = html.replace('body{min-height:100svh}', 'body{min-height:100svh;overflow-x:hidden}')
+
+          if 'Count sheep online to relax before sleep' not in html:
+              section = '''\n<section class="seo-info" aria-label="About counting sheep online">
+            <h2>Count sheep online to relax before sleep</h2>
+            <p><strong>Count Sheep Online</strong> turns the familiar bedtime ritual into a simple digital experience. Watch one sheep at a time cross the screen and jump the fence, then keep the count in your head. There is no account, score, feed, or game to keep you awake.</p>
+            <h2>How to use this online sheep counter</h2>
+            <ol><li>Get comfortable and lower your screen brightness.</li><li>Watch each sheep jump the fence and count quietly: one, two, three…</li><li>If you lose your place, tap <strong>Show count</strong> briefly, then continue.</li></ol>
+            <p>The goal is not to reach a high number. The repetition is intentionally simple so your attention has something gentle and predictable to follow.</p>
+            <h2>Does counting sheep help you sleep?</h2>
+            <p>Counting sheep is a traditional relaxation ritual, not a guaranteed sleep treatment. Some people find a repetitive, low-effort mental task calming because it gives the mind a neutral focus. If it feels stimulating instead of relaxing, use whatever bedtime routine works better for you.</p>
+          </section>\n'''
+              html = html.replace('</main>\n\n<script>', '</main>' + section + '\n<script>', 1)
+
+          p.write_text(html, encoding='utf-8')
+
+          clean = Path('count-sheep')
+          clean.mkdir(exist_ok=True)
+          (clean / 'index.html').write_text(html, encoding='utf-8')
+
+          Path('robots.txt').write_text('''User-agent: *\nAllow: /\n\nSitemap: https://philipz0724-byte.github.io/lucklab/sitemap.xml\n''', encoding='utf-8')
+          Path('sitemap.xml').write_text('''<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://philipz0724-byte.github.io/lucklab/count-sheep/</loc>\n    <lastmod>2026-08-24</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>\n''', encoding='utf-8')
+          PY
+
+      - name: Commit SEO files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add count-sheep.html count-sheep/index.html robots.txt sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No SEO changes needed"
+          else
+            git commit -m "Add SEO foundation for Count Sheep"
+            git push
+          fi
